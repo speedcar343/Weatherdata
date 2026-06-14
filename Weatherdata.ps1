@@ -1,5 +1,5 @@
 # --- KONFIGURATION ---
-$stationID = "11723" # Salzburg/Flughafen
+$stationID = "13401" # Salzburg/Flughafen
 
 
 $configPath = "$PSScriptRoot\config.json"
@@ -11,17 +11,19 @@ $user = $config.Username
 $password = $config.Password
 
 $connectionString = "Server=$server;Database=$database;User Id=$user;Password=$password;TrustServerCertificate=True;Encrypt=false;"
-$connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+#$connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
 
-
-$apiUrl = "https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v1-1h"
+$parameter = "TTX"
+$baseUrl  = "https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v1-1h"
 
 # Zeitbereich: Letzte 2 Stunden abfragen
-$start = (Get-Date).AddHours(-2).ToString("yyyy-MM-ddTHH:mm")
-$end = (Get-Date).ToString("yyyy-MM-ddTHH:mm")
-
+$start = "2026-05-01T00:00:00Z"
+$end   = "2026-05-31T23:59:59Z"
 # --- API ABFRAGE ---
-$fullUrl = "$apiUrl?parameters=TL&station_ids=$stationID&start=$start&end=$end&output_format=json"
+
+$fullUrl = $baseUrl + "?parameters=$parameter&station_ids=$stationID&start=$start&end=$end&output_format=geojson"
+
+
 
 try {
     $response = Invoke-RestMethod -Uri $fullUrl -Method Get
@@ -41,7 +43,7 @@ try {
     $conn = New-Object System.Data.SqlClient.SqlConnection($connectionString)
     $conn.Open()
 
-    $query = "INSERT INTO Wetterdaten (Ort, Temperatur, Messzeit) VALUES (@ort, @temp, @zeit)"
+    $query = "INSERT INTO dbo.Wetterdaten (Ort, Temperatur, Messzeit) VALUES (@ort, @temp, @zeit)"
     $cmd = $conn.CreateCommand()
     $cmd.CommandText = $query
     $cmd.Parameters.AddWithValue("@ort", $ortName)
