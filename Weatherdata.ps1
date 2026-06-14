@@ -1,5 +1,5 @@
 # --- KONFIGURATION ---
-$stationID = "13401" # Salzburg/Flughafen
+$stationID = "11723" # Salzburg/Flughafen
 
 
 $configPath = "$PSScriptRoot\config.json"
