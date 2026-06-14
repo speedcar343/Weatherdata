@@ -1,6 +1,19 @@
 # --- KONFIGURATION ---
 $stationID = "11723" # Salzburg/Flughafen
-$connectionString = "Server=DEIN_SERVER;Database=DEINE_DB;Integrated Security=True;TrustServerCertificate=True;"
+
+
+$configPath = "$PSScriptRoot\config.json"
+$config = Get-Content $configPath | ConvertFrom-Json
+
+$server = $config.Server
+$database = $config.Database
+$user = $config.Username
+$password = $config.Password
+
+$connectionString = "Server=$server;Database=$database;User Id=$user;Password=$password;TrustServerCertificate=True;Encrypt=false;"
+$connection = New-Object System.Data.SqlClient.SqlConnection($connectionString)
+
+
 $apiUrl = "https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v1-1h"
 
 # Zeitbereich: Letzte 2 Stunden abfragen
